@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  laravel-mentorship-webserver:
+    image: nginx:1.21.6-alpine
+    container_name: laravel-mentorship-webserver
+    #restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - ./:/var/www/html
+      - .docker/nginx:/etc/nginx/conf.d
+    networks:
+      laravel-mentorship-network:
+
+  laravel-mentorship-backend:
+    build:
+      context: .docker/php
+      dockerfile: dockerfile
+    container_name: laravel-mentorship-backend
+    volumes:
+      - ./:/var/www/html
+      - .docker/php/php.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      laravel-mentorship-network:
+networks:
+  laravel-mentorship-network:
+    external:
+      name: laravel-mentorship-network
+
+volumes:
+  laravel-mentorship-data:      
