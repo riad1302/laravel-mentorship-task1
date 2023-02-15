@@ -14,10 +14,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('referrals', function (Blueprint $table) {
+        Schema::create('invites', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class);
-            $table->string('email');
+            $table->string('email')->unique();
+            $table->string('token', 20)->unique();
             $table->tinyInteger('is_register')->default(0);
             $table->timestamps();
         });
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('referrals');
+        Schema::dropIfExists('invites');
     }
 };

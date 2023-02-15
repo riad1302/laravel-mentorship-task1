@@ -50,6 +50,11 @@ class UserController extends Controller
         }
     }
 
+    public function registrationRefer() 
+    {
+        return view('registration');
+    }
+
     public function logout()
     {
         Session::flush();

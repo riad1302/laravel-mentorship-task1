@@ -16,7 +16,7 @@
                 {{ session('failed') }}
             </div>
             @endif
-            <form id="submitForm" action="{{route('login')}}" method="post">
+            <form id="submitForm" action="{{route('referrals.create')}}" method="post">
                 @csrf
                 <div class="form-group required">
                     <label for="email"> Enter Invited Email </label>
