@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegistrationRequest;
+use App\Models\Invite;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -37,6 +38,13 @@ class UserController extends Controller
     public function store(RegistrationRequest $request)
     {
         try {
+            $token = $request->token;
+            if ($token) {
+                $invationFound = Invite::where('token', $token)->first();
+                if (!empty($invationFound)) {
+                    Invite::where('token', $token)->update(['is_register' => 1]);
+                }
+            }
             $role_id = Role::where('name', 'user')->first()->id;
             $user =  new User;
             $user->name = $request->name;
@@ -50,9 +58,11 @@ class UserController extends Controller
         }
     }
 
-    public function registrationRefer() 
+    public function registrationRefer(Request $request) 
     {
-        return view('registration');
+        $data['email'] = $request->query('refer');
+        $data['token'] = $request->query('token');
+        return view('registration', compact('data'));
     }
 
     public function logout()

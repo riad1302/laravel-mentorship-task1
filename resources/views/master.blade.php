@@ -2,7 +2,7 @@
 <html lang="en" >
    <head>
       <meta charset="UTF-8">
-      <title> Bootstrap 4 Login Form Example  </title>
+      <title> Laravel MentorShip Task </title>
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
    </head>
    <style>  

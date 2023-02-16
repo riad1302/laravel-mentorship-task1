@@ -13,7 +13,8 @@
     </div>
     <div class="form-group required">
         <label for="email"> Enter your Email </label>
-        <input type="text" class="form-control" id="email" name="email" value="{{ old('email') }}">
+        <input type="text" class="form-control" id="email" name="email" value="{{ isset($data['email']) &&  $data['email'] ? $data['email'] : old('email') }}">
+        <input type="hidden" name="token" value="{{ isset($data['token']) &&  $data['token'] ? $data['token'] : '' }}">
         @if ($errors->has('email'))
             <span class="text-danger">{{ $errors->first('email') }}</span>
         @endif 

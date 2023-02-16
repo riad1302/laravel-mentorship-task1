@@ -32,4 +32,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/referrals/create', [InviteController::class, 'create'])->name('referrals.create');
     Route::post('/referrals/create', [InviteController::class, 'store'])->name('referrals.create');
+    Route::group(['middleware' => ['admin']], function () {
+        Route::get('/referrals/list', [InviteController::class, 'view'])->name('referrals.list');
+    });
 });

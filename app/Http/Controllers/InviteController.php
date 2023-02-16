@@ -19,40 +19,53 @@ class InviteController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|unique:users,email'
-        ]);
-        $validator->after(function ($validator) use ($request) {
-            if (Invite::where('email', $request->email)->exists()) {
-                $validator->errors()->add('email', 'There exists an invite with this email!');
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|unique:users,email'
+            ]);
+            $validator->after(function ($validator) use ($request) {
+                if (Invite::where('email', $request->email)->exists()) {
+                    $validator->errors()->add('email', 'There exists an invite with this email!');
+                }
+                if (Invite::where(['user_id' => Auth::user()->id, 'is_register' => 1])->count() > 10) {
+                    $validator->errors()->add('email', 'You can maximum 10 successful referrals!');
+                }
+            });
+            if ($validator->fails()) {
+                return redirect('/referrals/create')
+                            ->withErrors($validator)
+                            ->withInput();
             }
-        });
-        if ($validator->fails()) {
-            return redirect('/referrals/create')
-                        ->withErrors($validator)
-                        ->withInput();
+
+            do {
+                $token = Str::random(20);
+            } while (Invite::where('token', $token)->first());
+
+            $insert = Invite::create([
+                'user_id' => Auth::user()->id,
+                'token' => $token,
+                'email' => $request->email
+            ]);
+            $url = URL::signedRoute('register', ['refer' => $request->email, 'token' => $token]);
+            if ($insert && $url) {
+                $emailInfo = [
+                    'email' => $request->email,
+                    'senderEmail' => Auth::user()->email,
+                    'senderName' => Auth::user()->name,
+                    'link' => $url
+                ];
+                SendEmailJob::dispatch($emailInfo);
+            }
+            return redirect()->route('referrals.create')
+                            ->withSuccess('Invatation Succcessfully');
+        } catch (\Exception $e) {
+            return redirect('create')->with('failed',"Invatation failed");
         }
+    }
 
-        do {
-            $token = Str::random(20);
-        } while (Invite::where('token', $token)->first());
-
-        $insert = Invite::create([
-            'user_id' => Auth::user()->id,
-            'token' => $token,
-            'email' => $request->email
-        ]);
-        $url = URL::signedRoute('register', ['refer' => $token]);
-        if ($insert && $url) {
-            $emailInfo = [
-                'email' => $request->email,
-                'senderEmail' => Auth::user()->email,
-                'senderName' => Auth::user()->name,
-                'link' => $url
-            ];
-            SendEmailJob::dispatch($emailInfo);
-        }
-
-        
+    public function view()
+    {
+        $lists = Invite::with('user:id,name')->select('user_id', 'email', 'is_register', 'created_at')->orderBy('id', 'desc')->paginate(10);
+        return view('referrals.list', compact('lists'));
     }
 }
