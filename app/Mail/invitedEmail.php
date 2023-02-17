@@ -29,6 +29,6 @@ class invitedEmail extends Mailable
      */
     public function build()
     {
-        return $this->subject("Mail From Laravel Mentroship")->markdown('emails.invitedEmail');
+        return $this->subject("Mail From Laravel Mentroship")->markdown('layouts.emails.invitedEmail');
     }
 }

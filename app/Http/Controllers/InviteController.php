@@ -14,7 +14,7 @@ class InviteController extends Controller
 {
     public function create()
     {
-        return view('referrals.create');
+        return view('layouts.referrals.create');
     }
 
     public function store(Request $request)
@@ -66,6 +66,6 @@ class InviteController extends Controller
     public function view()
     {
         $lists = Invite::with('user:id,name')->select('user_id', 'email', 'is_register', 'created_at')->orderBy('id', 'desc')->paginate(10);
-        return view('referrals.list', compact('lists'));
+        return view('layouts.referrals.list', compact('lists'));
     }
 }
